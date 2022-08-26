@@ -1,6 +1,7 @@
 from pandas import read_csv
 import os
 from task.db import Database
+from task.exceptions.errors import ObjectNoneError
 from task.model.ideal import Ideal
 from task.model.test import Test
 from task.model.train import Train
@@ -10,7 +11,7 @@ class LoadData:
 
     def __init__(self, connection=None):
         if connection is None:
-            db = Database
+            db = Database()
             self.conn = db.get_database_connection()
         else:
             self.conn = connection
@@ -24,12 +25,16 @@ class LoadData:
         :param file_path: file path is the relative file path to the main.py file
         :return: Loaded Dataframe from CSV
         """
-        path = "resources/train.csv"
-        if file_path is not None:
-            path = file_path
-        current_dir = os.path.curdir
-        train_file_path = os.path.join(current_dir, path)
-        return read_csv(train_file_path)
+        try:
+            path = "resources/train.csv"
+            if file_path is not None:
+                path = file_path
+            current_dir = os.path.curdir
+            train_file_path = os.path.join(current_dir, path)
+            return read_csv(train_file_path)
+        except FileNotFoundError:
+            print("{} is not found to load the training data".format(train_file_path))
+            return
 
     @staticmethod
     def load_ideal_data(file_path=None):
@@ -40,12 +45,16 @@ class LoadData:
         :param file_path: file path is the relative filepath to the main.py file
         :return: Loaded dataframe from CSV
         """
-        path = "resources/ideal.csv"
-        if file_path is not None:
-            path = file_path
-        current_dir = os.path.curdir
-        train_file_path = os.path.join(current_dir, path)
-        return read_csv(train_file_path)
+        try:
+            path = "resources/ideal.csv"
+            if file_path is not None:
+                path = file_path
+            current_dir = os.path.curdir
+            train_file_path = os.path.join(current_dir, path)
+            return read_csv(train_file_path)
+        except FileNotFoundError:
+            print("{} is not found to load the training data".format(train_file_path))
+            return
 
     @staticmethod
     def load_test_data(file_path=None):
@@ -57,12 +66,16 @@ class LoadData:
         be considered
         :return: Loaded dataframe from csv
         """
-        path = "resources/test.csv"
-        if file_path is not None:
-            path = file_path
-        current_dir = os.path.curdir
-        train_file_path = os.path.join(current_dir, path)
-        return read_csv(train_file_path)
+        try:
+            path = "resources/test.csv"
+            if file_path is not None:
+                path = file_path
+            current_dir = os.path.curdir
+            train_file_path = os.path.join(current_dir, path)
+            return read_csv(train_file_path)
+        except FileNotFoundError:
+            print("{} is not found to load the training data".format(train_file_path))
+            return
 
     def add_train_data_to_database(self, file_path=None, train_obj: Train = None):
         """
@@ -73,7 +86,7 @@ class LoadData:
         """
         if train_obj is None:
             print("The train object should not be None for the values to be created")
-            return
+            raise ObjectNoneError({"message": "The train object is None"})
         # Creating an empty list
         value_list = list()
 

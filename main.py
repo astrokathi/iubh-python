@@ -1,5 +1,4 @@
 import math
-
 from task.db import Database
 from task.model.test import Test
 from task.model.train import Train
